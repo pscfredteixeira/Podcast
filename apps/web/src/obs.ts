@@ -27,14 +27,17 @@ export type ObsGuest = { streamId: string; label: string };
  * Only accept a concrete stream ID, never a numeric slot index.
  */
 export function parseGuestList(input: unknown): ObsGuest[] | null {
-  if (!Array.isArray(input)) return null;
+  // A resposta oficial costuma ser um objeto com chaves de slot ("1", "2"...),
+  // mas versões diferentes também retornam um array.
+  if (!input || typeof input !== "object") return null;
+  const items = Array.isArray(input) ? input : Object.values(input);
   const guests: ObsGuest[] = [];
   const seen = new Set<string>();
-  for (const value of input) {
+  for (const value of items) {
     if (!value || typeof value !== "object") continue;
     const item = value as Record<string, unknown>;
     const id = [item.streamID, item.streamId, item.streamid, item.stream, item.id]
-      .find(v => typeof v === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(v)) as string | undefined;
+      .find(v => typeof v === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(v) && !/^\\d+$/.test(v)) as string | undefined;
     if (!id || seen.has(id)) continue;
     seen.add(id);
     const label = typeof item.label === "string" && item.label.trim()
