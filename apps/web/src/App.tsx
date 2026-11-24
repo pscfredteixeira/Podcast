@@ -7,6 +7,7 @@ import {
 import type { RoomSnapshot } from "./api";
 import QuizPanel from "./QuizPanel";
 import ActivityPanel from "./ActivityPanel";
+import ObsDirectorPanel from "./ObsDirectorPanel";
 import { createRoomId, inviteUrl, isRoomId, readRoomId, readTeacherSecret, teacherUrl, vdoUrl } from "./room";
 
 type DeviceStatus = "idle" | "testing" | "ready" | "error";
@@ -39,6 +40,12 @@ export default function App() {
   const [role, setRole] = useState<Role>(null);
   const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
   const [joined, setJoined] = useState(false);
+  // O Podcast Lab não tem autenticação de produtor; esta marca apenas a aba
+  // que criou a sala. Não usar como controle de acesso confiável.
+  const [localProducerRoom, setLocalProducerRoom] = useState<string | null>(() => {
+    try { return window.sessionStorage.getItem("podcast:producer-room"); }
+    catch { return null; }
+  });
   const [panelTab, setPanelTab] = useState<"quiz" | "activity">("quiz");
   const [studentPanelHidden, setStudentPanelHidden] = useState(false);
   const [studentActivityExpanded, setStudentActivityExpanded] = useState(false);
@@ -58,6 +65,7 @@ export default function App() {
   const hasValidRoom = isRoomId(room);
   const isStudentInvite = Boolean(initialRoom && room === initialRoom && !teacherSecret);
   const hasServer = Boolean(API_BASE_URL);
+  const isLocalProducer = !hasServer && joined && hasValidRoom && localProducerRoom === room;
   // Somente o conteúdo que o professor apresentou ocupa a tela do aluno.
   // O professor conserva as duas abas para preparar o conteúdo seguinte.
   const presentedType = snapshot?.focus === "quiz" || snapshot?.focus === "activity"
@@ -170,6 +178,9 @@ export default function App() {
     if (!hasServer) {
       const id = createRoomId();
       setRoomInput(id);
+      setLocalProducerRoom(id);
+      try { window.sessionStorage.setItem("podcast:producer-room", id); }
+      catch { /* Persistência opcional neste navegador. */ }
       setTeacherSecret("");
       setRole(null);
       setAuthToken("");
@@ -492,14 +503,16 @@ export default function App() {
               )}
             </div>
 
+            {isLocalProducer && <ObsDirectorPanel room={room} />}
+
             <div className="call-footer">
               <div className="call-note">
                 <strong>Nota:</strong> os controles da chamada são do VDO.Ninja. Sair ou encerrar
-                a sala no Aulas não interrompe uma chamada aberta em outra aba.
+                a sala no Podcast não interrompe uma chamada aberta em outra aba.
               </div>
               <div className="call-actions">
-                <button className="button button-primary" type="button" onClick={() => void copyText(invitation, "Convite de aluno copiado.")}>
-                  Copiar convite de aluno
+                <button className="button button-primary" type="button" onClick={() => void copyText(invitation, "Convite de convidado copiado.")}>
+                  Copiar convite de convidado
                 </button>
                 <a className="text-link" href={mediaUrl} target="_blank" rel="noopener noreferrer">
                   Abrir vídeo em outra aba
