@@ -60,6 +60,10 @@ jobs:
           git add -A -- assets index.html .nojekyll
           if ! git diff --cached --quiet; then
             git commit -m "build(podcast): disponibilizar site pronto para GitHub Pages [skip ci]"
+            # Outros commits podem entrar enquanto o workflow compila.
+            # Reconciliar com a ponta remota antes do push, sem usar force.
+            git fetch origin main
+            git rebase origin/main
             git push origin HEAD:main
           fi
       - name: Configurar Pages
