@@ -1,5 +1,5 @@
-import { obsSoloUrl } from "./obs";
-import type { ObsGuest } from "./obs";
+import { obsSoloUrl } from "./obs.ts";
+import type { ObsGuest } from "./obs.ts";
 
 /**
  * OBS WebSocket v5, running only on THIS computer.
