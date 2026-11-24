@@ -34,6 +34,15 @@ test("lista de participantes do VDO reconhece IDs, remove repetições e ignora 
     { streamId: "cameraBob_24", label: "Beto" },
     { streamId: "camEve77", label: "Convidado 3" }
   ]);
+  assert.deepEqual(parseGuestList({
+    "1": { streamID: "cameraFred123", label: "Fred" },
+    "2": { streamID: "cameraElton456", label: "Convidado" },
+    "3": { streamID: "cameraFred123", label: "Duplicado" },
+    "4": { streamID: "1234", label: "Slot numérico" }
+  }), [
+    { streamId: "cameraFred123", label: "Fred" },
+    { streamId: "cameraElton456", label: "Convidado" }
+  ]);
   assert.equal(parseGuestList(null), null);
   assert.deepEqual(parseGuestList([]), []);
 });
