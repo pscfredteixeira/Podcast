@@ -23,3 +23,7 @@ O criador da sala já pode abrir um **Painel diretor** para consultar o VDO.Ninj
 5. Validar a gravação de ponta a ponta antes de usar em episódios.
 
 A cópia mantém os quizzes e as enquetes como base de código, mas **não afirma que a gravação já funciona**. Nenhuma credencial do Aulas foi transportada.
+
+## Publicação estática de compatibilidade
+
+O build de produção também é sincronizado para o arquivo `index.html` e a pasta `assets/` na raiz. Isso impede que o fluxo legado do GitHub Pages/Jekyll exiba um repositório de código no lugar do aplicativo. Os arquivos são gerados automaticamente no GitHub Actions; **não editar manualmente**.
