@@ -101,10 +101,10 @@ export default function ObsDirectorPanel({ room }: Props) {
       // VDO.Ninja returns either a guestList property or callback.result.
       const callback = message.callback && typeof message.callback === "object"
         ? message.callback as Record<string, unknown> : null;
-      const data = "guestList" in message ? message.guestList
+      const guestData = "guestList" in message ? message.guestList
         : callback && "result" in callback ? callback.result : null;
-      if ((message.cib === "podcast-obs-guests" || message.action === "getGuestList") && data !== null) {
-        const parsed = parseGuestList(data);
+      if ((message.cib === "podcast-obs-guests" || message.action === "getGuestList") && guestData !== null) {
+        const parsed = parseGuestList(guestData);
         if (parsed) {
           setGuests(parsed);
           setSeenReply(true);
