@@ -23,6 +23,41 @@ Cada endereço pode ser colado em **OBS Studio → Fontes → + → Navegador �
 
 O modo diretor exibe outra interface do VDO.Ninja: use fones, monitore eco e evite ativar seu microfone duas vezes.
 
+## Enviar todos automaticamente para o OBS (novo)
+
+O painel do Podcast Lab agora também pode criar todas as fontes de navegador no OBS
+sem copiar e colar individualmente. Esse recurso usa o **OBS WebSocket 5.x**, integrado
+ao OBS Studio 28 ou superior. Ele se conecta **somente ao OBS que está rodando no mesmo
+computador**, em `127.0.0.1`, com a porta configurada pelo usuário (padrão 4455).
+
+1. Abra o OBS Studio no computador e escolha **Ferramentas → Configurações do servidor WebSocket**.
+2. Marque **Habilitar servidor WebSocket**, mantenha a autenticação ligada e use **Mostrar informações de conexão** para encontrar a porta e a senha.
+3. No mesmo computador, abra o Podcast Lab, crie a sala e clique em **Conectar painel diretor**.
+4. Peça aos convidados que entrem e habilitem a câmera; os IDs precisam aparecer na lista.
+5. Na seção **Enviar todos diretamente para o OBS**, informe a porta e senha e clique **Conectar ao OBS**. O navegador pode solicitar permissão de acesso à rede local.
+6. Selecione a cena do OBS. Clique em **Enviar N fonte(s) para o OBS**.
+7. Confira as fontes dentro da cena do OBS, posicione-as como desejar e **comece a gravar no próprio OBS**.
+
+Cada convidado vira uma fonte `browser_source` de 1280×720 apontando para seu SOLO LINK
+`?room=...&view=...&solo`. O nome contém o identificador da sala e do stream.
+Executar outra vez não duplica uma fonte que já esteja na cena. Se a mesma fonte existir
+na coleção mas não estiver naquela cena, ela será vinculada à cena escolhida.
+
+**O que o botão não faz:** não grava automaticamente, não inicia streaming, não altera
+ou apaga outras cenas e não coloca os convidados automaticamente na posição ideal
+dentro do quadro. Não use um mesmo microfone transmitindo duas vezes para evitar eco.
+A senha do OBS é usada apenas no navegador para autenticar a conexão local; não é salva
+em armazenamento local nem enviada ao backend.
+
+**Limitação importante:** em alguns navegadores, uma página HTTPS não consegue abrir
+`ws://127.0.0.1:4455` sem permissão de rede local, ou a conexão pode ser bloqueada.
+O recurso foi validado por testes automatizados do protocolo, **não por um teste real
+de OBS conectado neste ambiente**. Se o navegador bloquear, ainda é possível copiar
+os SOLO LINKS e criá-los manualmente no OBS.
+
+Referência do OBS: https://github.com/obsproject/obs-websocket
+Referência do protocolo: https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md
+
 ## Limitações e segurança
 
 - Esta versão é **experimental**: os testes automatizados validam a montagem e a segurança básica das URLs, mas ainda é necessário testar a lista de convidados em uma sessão VDO.Ninja real. O formato das respostas do iframe pode variar entre versões.
