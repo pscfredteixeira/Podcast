@@ -547,3 +547,34 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .lesson-workspace--student .activity-prompt { font-size: 18px; }
   .lesson-workspace--student .quiz-option { font-size: 13px; }
 }
+
+/* Podcast Lab: painel de produção de fontes individuais para OBS. */
+.obs-producer-panel {
+  margin: 20px 0;
+  background: #fff;
+  border: 1px solid #e5dbea;
+  border-radius: 22px;
+  padding: clamp(16px, 2.6vw, 28px);
+}
+.obs-producer-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.obs-producer-heading .eyebrow { margin: 0 0 9px; }
+.obs-producer-heading h2 { margin: 0 0 9px; font-size: 23px; }
+.obs-producer-heading p, .obs-advice { margin: 0; color: #70677b; font-size: 13px; line-height: 1.6; }
+.obs-advice { margin: 13px 0; }
+.obs-producer-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 18px 0; }
+.obs-producer-actions a.button { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.obs-director-frame { border: 1px solid #e1d6e9; padding: 6px; border-radius: 15px; background: #171326; }
+.obs-director-frame iframe { width: 100%; height: min(58vh, 550px); min-height: 320px; border: 0; border-radius: 10px; display: block; }
+.obs-guest-heading { display: flex; gap: 12px; justify-content: space-between; align-items: baseline; margin-top: 20px; }
+.obs-guest-heading h3 { margin: 0; font-size: 17px; }
+.obs-guest-heading span { color: #796786; font-size: 12px; }
+.obs-guest-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,320px),1fr)); gap: 12px; margin: 14px 0; }
+.obs-guest-card { min-width: 0; display: flex; flex-direction: column; gap: 9px; padding: 15px; border: 1px solid #e9e1ef; border-radius: 13px; background: #faf8fe; }
+.obs-guest-card strong { font-size: 15px; }
+.obs-guest-id { font-size: 11px; color: #776987; word-break: break-all; }
+.obs-guest-card input { width: 100%; padding: 11px; border-radius: 9px; border: 1px solid #ded5e5; background: #fff; font-size: 12px; }
+@media(max-width:560px) {
+  .obs-producer-heading h2 { font-size: 20px; }
+  .obs-producer-heading .button, .obs-producer-actions .button { width: 100%; }
+  .obs-director-frame iframe { height: 50vh; min-height: 280px; }
+}
