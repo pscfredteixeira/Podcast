@@ -7,6 +7,13 @@ on:
       - "apps/web/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
+  # Proteção temporária: se o deploy legado do Pages/Jekyll ainda disparar
+  # após o push, republicar o build Vite assim que ele terminar.
+  # Remover quando o Pages estiver usando somente GitHub Actions.
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
