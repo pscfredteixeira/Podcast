@@ -56,7 +56,9 @@ export class ObsConnection {
   private requests = new Map<string, PendingRequest>();
   private counter = 0;
   private closeHandlers = new Set<() => void>();
-  constructor(private readonly socket: WebSocket) {
+  private readonly socket: WebSocket;
+  constructor(socket: WebSocket) {
+    this.socket = socket;
     socket.addEventListener("message", event => {
       let message: Json;
       try { message = record(JSON.parse(String(event.data))); }
