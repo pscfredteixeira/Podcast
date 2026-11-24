@@ -8,6 +8,12 @@ A proposta é adaptar a videochamada VDO.Ninja a um estúdio de podcast, com apr
 
 O site da cópia precisará do GitHub Pages habilitado para este repositório. O repositório atualmente se chama `Podcast` (maiúsculo); o endereço esperado será `https://pscfredteixeira.github.io/Podcast/`, não o `/podcast/` minúsculo até renomear o repositório.
 
+## Fontes individuais para OBS — protótipo
+
+O criador da sala já pode abrir um **Painel diretor** para consultar o VDO.Ninja e obter links SOLO de cada convidado. Copie os links para **Fontes de navegador do OBS Studio**, uma fonte por pessoa. O funcionamento automático com convidados reais ainda precisa ser validado em dois navegadores/dispositivos.
+
+[Guia de uso e limitações](docs/OBS-LINKS.md).
+
 ## Próximas etapas
 
 1. Adaptar o nome, textos e fluxo de entrada para **apresentador** e **convidado**.
