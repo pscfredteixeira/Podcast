@@ -37,7 +37,7 @@ export function parseGuestList(input: unknown): ObsGuest[] | null {
     if (!value || typeof value !== "object") continue;
     const item = value as Record<string, unknown>;
     const id = [item.streamID, item.streamId, item.streamid, item.stream, item.id]
-      .find(v => typeof v === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(v) && !/^\\d+$/.test(v)) as string | undefined;
+      .find(v => typeof v === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(v) && !/^\d+$/.test(v)) as string | undefined;
     if (!id || seen.has(id)) continue;
     seen.add(id);
     const label = typeof item.label === "string" && item.label.trim()
