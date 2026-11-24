@@ -578,3 +578,35 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .obs-producer-heading .button, .obs-producer-actions .button { width: 100%; }
   .obs-director-frame iframe { height: 50vh; min-height: 280px; }
 }
+
+/* Importação automática de todos os participantes para OBS Studio 28+.
+   Comunicação WebSocket apenas com a interface local 127.0.0.1. */
+.obs-auto-import {
+  border-radius: 16px; border: 1px solid #d9cce9;
+  background: #f8f4fd; padding: clamp(14px,2vw,24px); margin: 21px 0;
+  display: grid; gap: 12px;
+}
+.obs-auto-import h3 { font-size: 19px; margin: 0; color: #4d2c71; }
+.obs-auto-import .obs-advice { margin: 0; }
+.obs-connect-form { display: grid; grid-template-columns: 140px minmax(190px,1fr) auto; gap: 10px; align-items: end; }
+.obs-connect-form label, .obs-import-select label {
+  display: grid; gap: 6px; font-size: 12px; font-weight: 750; color: #574064;
+}
+.obs-connect-form input, .obs-import-select select {
+  width: 100%; padding: 10px 12px; min-height: 44px;
+  border: 1px solid #ccbedb; border-radius: 10px; background: #fff;
+  color: #332840; font: inherit; font-size: 13px;
+}
+.obs-connect-form .button { min-height: 44px; }
+.obs-import-ready { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.obs-import-ready .button { min-height: 44px; }
+.obs-import-select { min-width: 185px; flex: 1 1 185px; }
+.obs-connected { color: #266a3c; background: #e8f7eb; border: 1px solid #c3e7cb; font-size: 12px;
+  font-weight: 800; padding: 12px; border-radius: 10px; margin: 0; flex: 1 1 100%; }
+.obs-import-result { background: #ebf7f0; border: 1px solid #c4e3ca; border-radius: 11px;
+  padding: 13px; font-size: 13px; color: #21583d; line-height: 1.5; }
+.obs-import-result p { margin: 6px 0 0; overflow-wrap: anywhere; }
+@media(max-width: 800px) {
+  .obs-connect-form { grid-template-columns: minmax(0,1fr); }
+  .obs-import-ready .button { flex: 1 1 100%; }
+}
