@@ -1,4 +1,5 @@
-import { isRoomId } from "./room";
+// IDs compatíveis com o código de salas do Podcast (espelhado de room.ts).
+const isRoomId = (room: string) => /^aulas-[0-9a-f]{24}$/.test(room);
 
 /** Source URL supplied to OBS Browser Source; never publish as this viewer link. */
 export function obsSoloUrl(room: string, streamId: string): string {
