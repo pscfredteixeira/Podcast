@@ -510,7 +510,7 @@ export default function App() {
             </div>
 
             {isLocalProducer && <RecordingGuide room={room} />}
-            {isLocalProducer && <ObsDirectorPanel room={room} />}
+            {isLocalProducer && <ObsDirectorPanel room={room} callFrameRef={mediaFrameRef} />}
             {!isLocalProducer && !hasServer && role === "demo" && (
               <p className="podcast-hand-hint">
                 <strong>Quer pedir a palavra?</strong> Use o botão
