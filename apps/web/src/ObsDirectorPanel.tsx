@@ -145,9 +145,9 @@ export default function ObsDirectorPanel({ room }: Props) {
       <header className="obs-producer-heading">
         <div>
           <span className="eyebrow">Produção · acesso local</span>
-          <h2>Direção do Podcast · mãos levantadas e OBS</h2>
-          <p>As mãos levantadas aparecem no diretor do VDO.Ninja. Você também pode
-          levar cada vídeo para o OBS, se precisar.</p>
+          <h2>Direção do Podcast · fontes para OBS</h2>
+          <p>Os pedidos de fala aparecem acima da videochamada, para todos.
+          Este painel reúne os links individuais de vídeo para o OBS.</p>
         </div>
         {!enabled && (
           <button className="button button-primary" type="button"
@@ -158,9 +158,8 @@ export default function ObsDirectorPanel({ room }: Props) {
       </header>
 
       <p className="obs-advice">
-        Quando alguém usar "Levantar a mão" na chamada, o diretor recebe um aviso.
-        O painel fica conectado automaticamente durante a gravação. Se não ouvir o
-        alerta, clique uma vez no diretor para liberar o som do navegador.
+        O pedido de fala do Podcast agora é compartilhado com todos pelo vídeo,
+        não depende de alertas do diretor nativo do VDO.Ninja.
       </p>
       <p className="obs-advice">
         O VDO.Ninja fornece um link SOLO para cada vídeo. Estes links exibem a transmissão no OBS,
