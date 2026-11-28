@@ -9,6 +9,7 @@ import QuizPanel from "./QuizPanel";
 import ActivityPanel from "./ActivityPanel";
 import ObsDirectorPanel from "./ObsDirectorPanel";
 import RecordingGuide from "./RecordingGuide";
+import HandsPanel from "./HandsPanel";
 import { createRoomId, inviteUrl, isRoomId, readRoomId, readTeacherSecret, teacherUrl, vdoUrl } from "./room";
 
 type DeviceStatus = "idle" | "testing" | "ready" | "error";
@@ -61,6 +62,7 @@ export default function App() {
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
   const localStream = useRef<MediaStream | null>(null);
   const previewRef = useRef<HTMLVideoElement | null>(null);
+  const mediaFrameRef = useRef<HTMLIFrameElement | null>(null);
 
   const room = roomInput.trim().toLowerCase();
   const hasValidRoom = isRoomId(room);
@@ -401,6 +403,8 @@ export default function App() {
               </div>
             </div>
 
+            <HandsPanel frame={mediaFrameRef} frameLoaded={frameLoaded} name={name} />
+
             {hasServer && snapshot && (
               <div className="room-status" aria-live="polite">
                 <span><strong>{snapshot.participants.length}</strong> aluno(s) com presença recente no Aulas</span>
@@ -417,6 +421,7 @@ export default function App() {
                   {!frameLoaded && <div className="loading-overlay" role="status">Carregando interface de vídeo…</div>}
                   <iframe
                     title="Videochamada em grupo VDO.Ninja"
+                    ref={mediaFrameRef}
                     src={mediaUrl}
                     allow="camera; microphone; autoplay; display-capture; fullscreen; picture-in-picture"
                     allowFullScreen
@@ -509,8 +514,8 @@ export default function App() {
             {!isLocalProducer && !hasServer && role === "demo" && (
               <p className="podcast-hand-hint">
                 <strong>Quer pedir a palavra?</strong> Use o botão
-                <strong> Levantar a mão</strong> nos controles do VDO.Ninja.
-                O apresentador verá o aviso no painel de direção.
+                <strong> Levantar a mão</strong> acima da videochamada.
+                Seu nome aparecerá para todos os participantes conectados.
               </p>
             )}
 
