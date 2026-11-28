@@ -637,3 +637,63 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
  .recording-destinations { grid-template-columns:minmax(0,1fr); }
  .recording-launch { width:100%; }
 }
+
+/* Podcast: pedidos de fala entre todos os participantes via VDO P2P. */
+.podcast-hands {
+  width: 100%;
+  border: 1px solid #e5d7f1;
+  border-radius: 15px;
+  background: #fbf8fe;
+  padding: 12px 15px;
+  margin: 9px 0 15px;
+}
+.podcast-hands-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.podcast-hands-button {
+  background: #6a3aa8;
+  color: white;
+  border: 1px solid #613194;
+  font-weight: 770;
+  min-height: 43px;
+}
+.podcast-hands-button:hover:not(:disabled) { background: #502789; }
+.podcast-hands-button--active {
+  background: #fff0d9;
+  color: #813f05;
+  border: 1px solid #e7ad64;
+}
+.podcast-hands-button--active:hover:not(:disabled) { background: #ffe4bb; }
+.podcast-hands-caption { font-size: 12px; color: #685b75; line-height: 1.5; flex: 1 1 220px; }
+.podcast-hands-raised {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #ecd19e;
+  border-radius: 11px;
+  background: #fff9ec;
+  color: #674411;
+  font-size: 13px;
+}
+.podcast-hands-names { display: flex; flex-wrap: wrap; gap: 7px; }
+.podcast-hands-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: white;
+  border: 1px solid #f2d9ab;
+  font-weight: 720;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .podcast-hands { padding: 10px; margin: 7px 0 11px; }
+  .podcast-hands-button { flex: 1 1 100%; }
+  .podcast-hands-caption { flex: 1 1 100%; }
+}
