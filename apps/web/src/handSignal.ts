@@ -17,7 +17,7 @@ export type HandEntry = {
   name: string;
   seenAt: number;
 };
-const validId = (id: unknown) =>
+const validId = (id: unknown): id is string =>
   typeof id === "string" && /^[a-zA-Z0-9_-]{8,64}$/.test(id);
 
 export function makeHandSignal(participantId: string, name: string, raised: boolean): HandSignal {
