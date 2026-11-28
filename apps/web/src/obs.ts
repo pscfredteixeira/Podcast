@@ -17,6 +17,8 @@ export function directorUrl(room: string): string {
   if (!isRoomId(room)) throw new Error("Sala inválida.");
   const url = new URL("https://vdo.ninja/");
   url.searchParams.set("director", room);
+  // O diretor recebe alertas quando alguém levanta a mão.
+  url.searchParams.set("notify", "");
   return url.toString();
 }
 
