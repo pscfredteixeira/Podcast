@@ -1,20 +1,33 @@
-import { useEffect, useRef, useState } from "react";
-import { directorUrl, obsSoloUrl, parseGuestList } from "./obs";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { RefObject } from "react";
+import { directorUrl, obsSoloUrl, manualObsGuest, parseVdoGuestResponse } from "./obs";
 import type { ObsGuest } from "./obs";
 import { connectLocalObs } from "./obsWebsocket";
 import type { ObsConnection, ObsScene, ObsImportReport } from "./obsWebsocket";
 
-type Props = { room: string };
+type Props = { room: string; callFrameRef: RefObject<HTMLIFrameElement | null> };
 
-export default function ObsDirectorPanel({ room }: Props) {
+export default function ObsDirectorPanel({ room, callFrameRef }: Props) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   // O diretor fica conectado desde a abertura da sala para oferecer
   // fontes individuais; as mãos são sincronizadas pelo iframe da chamada.
   const [enabled, setEnabled] = useState(true);
   const [ready, setReady] = useState(false);
-  const [guests, setGuests] = useState<ObsGuest[]>([]);
+  const [directorGuests, setDirectorGuests] = useState<ObsGuest[]>([]);
+  const [callGuests, setCallGuests] = useState<ObsGuest[]>([]);
+  const [manualGuests, setManualGuests] = useState<ObsGuest[]>([]);
+  const [manualLink, setManualLink] = useState("");
   const [seenReply, setSeenReply] = useState(false);
   const [error, setError] = useState("");
+  const guests = useMemo(() => {
+    const byId = new Map<string, ObsGuest>();
+    for (const guest of [...callGuests, ...directorGuests, ...manualGuests]) {
+      const existing = byId.get(guest.streamId);
+      if (!existing || existing.label.startsWith("Convidado") ||
+          existing.label.startsWith("Câmera ")) byId.set(guest.streamId, guest);
+    }
+    return [...byId.values()];
+  }, [callGuests, directorGuests, manualGuests]);
   const [copyNote, setCopyNote] = useState("");
   const [obs, setObs] = useState<ObsConnection | null>(null);
   const obsRef = useRef<ObsConnection | null>(null);
@@ -84,45 +97,83 @@ export default function ObsDirectorPanel({ room }: Props) {
   }
 
   function refresh() {
-    const child = frameRef.current?.contentWindow;
-    if (!child || !ready) return;
-    child.postMessage({
-      action: "getGuestList", cib: "podcast-obs-guests"
-    }, "https://vdo.ninja");
+    const director = frameRef.current?.contentWindow;
+    if (director && ready) {
+      // O VDO.Ninja documenta dois formatos de solicitação. Ambos são
+      // compatíveis com versões diferentes do iframe diretor.
+      director.postMessage({ getGuestList: true, cib: "podcast-obs-guests" }, "https://vdo.ninja");
+      director.postMessage({ action: "getGuestList", cib: "podcast-obs-guests" }, "https://vdo.ninja");
+      director.postMessage({ getStreamIDs: true, cib: "podcast-obs-streams" }, "https://vdo.ninja");
+    }
+    // Segundo canal: a videochamada principal também conhece os stream IDs.
+    callFrameRef.current?.contentWindow?.postMessage(
+      { getStreamIDs: true, cib: "podcast-obs-streams" }, "https://vdo.ninja"
+    );
+  }
+
+  function addManualGuest() {
+    try {
+      const guest = manualObsGuest(manualLink, room);
+      setManualGuests(previous => previous.some(g => g.streamId === guest.streamId)
+        ? previous : [...previous, guest]);
+      setManualLink("");
+      setError("");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Link inválido.");
+    }
   }
 
   useEffect(() => {
     if (!enabled) return;
     function onMessage(event: MessageEvent) {
-      // Never accept a supposed guest list from another browser frame or origin.
-      if (event.origin !== "https://vdo.ninja" ||
-        event.source !== frameRef.current?.contentWindow) return;
+      // Respostas só podem vir de um dos nossos dois iframes VDO.Ninja.
+      if (event.origin !== "https://vdo.ninja") return;
+      const isDirector = event.source === frameRef.current?.contentWindow;
+      const isCall = event.source === callFrameRef.current?.contentWindow;
+      if (!isDirector && !isCall) return;
       const data = event.data;
       if (!data || typeof data !== "object") return;
       const message = data as Record<string, unknown>;
-      // VDO.Ninja returns either a guestList property or callback.result.
-      const callback = message.callback && typeof message.callback === "object"
-        ? message.callback as Record<string, unknown> : null;
-      const guestData = "guestList" in message ? message.guestList
-        : callback && "result" in callback ? callback.result : null;
-      if ((message.cib === "podcast-obs-guests" || message.action === "getGuestList") && guestData !== null) {
-        const parsed = parseGuestList(guestData);
-        if (parsed) {
-          setGuests(parsed);
-          setSeenReply(true);
-          setError("");
-        }
+      const parsed = parseVdoGuestResponse(message);
+      if (parsed !== null) {
+        if (isDirector) setDirectorGuests(parsed);
+        else setCallGuests(parsed);
+        setSeenReply(true);
+        setError("");
       }
-      if (message.action === "guest-connected" || message.action === "guest-disconnected") {
-        // The periodic request also reconciles guests that disconnected.
-        frameRef.current?.contentWindow?.postMessage(
-          { action: "getGuestList", cib: "podcast-obs-guests" }, "https://vdo.ninja"
-        );
+      // Fallback ao conectar uma câmera: alguns VDOs notificam o streamID
+      // sem responder ao comando getGuestList.
+      if (message.action === "guest-connected" && typeof message.streamID === "string") {
+        try {
+          const guest = manualObsGuest(message.streamID, room);
+          const label = message.value && typeof message.value === "object" &&
+            typeof (message.value as Record<string, unknown>).label === "string"
+            ? String((message.value as Record<string, unknown>).label).slice(0, 50)
+            : guest.label;
+          const next = { ...guest, label };
+          if (isDirector) setDirectorGuests(current =>
+            [...current.filter(g => g.streamId !== next.streamId), next]);
+          else setCallGuests(current =>
+            [...current.filter(g => g.streamId !== next.streamId), next]);
+          setSeenReply(true);
+        } catch { /* IDs não compatíveis não são adicionados. */ }
+      }
+      if (message.action === "guest-connected" ||
+          message.action === "guest-disconnected") {
+        // Atualiza a lista sem reiniciar os iframes existentes.
+        window.setTimeout(() => {
+          frameRef.current?.contentWindow?.postMessage(
+            { getGuestList: true, cib: "podcast-obs-guests" }, "https://vdo.ninja"
+          );
+          callFrameRef.current?.contentWindow?.postMessage(
+            { getStreamIDs: true, cib: "podcast-obs-streams" }, "https://vdo.ninja"
+          );
+        }, 500);
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [enabled]);
+  }, [enabled, callFrameRef, room]);
 
   useEffect(() => {
     if (!enabled || !ready) return;
@@ -201,10 +252,26 @@ export default function ObsDirectorPanel({ room }: Props) {
           {!guests.length && (
             <p className="obs-advice" role="status">
               {seenReply
-                ? "Nenhum stream ID disponível agora. Confirme que os convidados já iniciaram a câmera no VDO.Ninja."
-                : "Aguardando resposta do diretor do VDO.Ninja. Se os links não aparecerem, copie o SOLO LINK na própria tela do diretor."}
+                ? "O OBS está disponível, mas nenhuma câmera foi identificada. Confira se os convidados já entraram e ativaram o vídeo. Você também pode adicionar um link SOLO manualmente abaixo."
+                : "Aguardando IDs das câmeras pelo VDO.Ninja. Se a lista continuar vazia, use o campo de link manual abaixo."}
             </p>
           )}
+          <div className="obs-manual-source">
+            <label htmlFor="obs-manual-link">Adicionar uma câmera pelo link SOLO ou stream ID</label>
+            <div className="obs-manual-source-row">
+              <input id="obs-manual-link" type="text" value={manualLink}
+                onChange={event => setManualLink(event.target.value)}
+                placeholder="https://vdo.ninja/?view=... ou stream ID"
+                onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); addManualGuest(); } }} />
+              <button className="button button-outline" type="button"
+                disabled={!manualLink.trim()} onClick={addManualGuest}>
+                Adicionar câmera
+              </button>
+            </div>
+            <p className="obs-advice">Caso a identificação automática falhe, copie o
+              SOLO LINK do convidado no diretor do VDO.Ninja. Depois de adicionar,
+              use o botão “Enviar fontes para o OBS”.</p>
+          </div>
           <div className="obs-guest-list">
             {guests.map(guest => {
               const url = obsSoloUrl(room, guest.streamId);
@@ -218,6 +285,13 @@ export default function ObsDirectorPanel({ room }: Props) {
                     onClick={() => void copy(url)}>
                     Copiar fonte para OBS
                   </button>
+                  {manualGuests.some(g => g.streamId === guest.streamId) && (
+                    <button type="button" className="button button-subtle"
+                      onClick={() => setManualGuests(current =>
+                        current.filter(g => g.streamId !== guest.streamId))}>
+                      Retirar link manual
+                    </button>
+                  )}
                 </div>
               );
             })}
