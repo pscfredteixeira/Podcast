@@ -610,3 +610,30 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .obs-connect-form { grid-template-columns: minmax(0,1fr); }
   .obs-import-ready .button { flex: 1 1 100%; }
 }
+
+/* Podcast: gravação local e backup em nuvem — abertura de ferramentas nativas. */
+.recording-guide { margin: 18px 0; padding: clamp(18px,3vw,28px);
+ background:#fff; border:1px solid #e8ddeb; border-radius:22px;
+ display:grid; gap:17px; }
+.recording-guide-head { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; justify-content:space-between; }
+.recording-guide-head .eyebrow { margin:0 0 11px; }
+.recording-guide h2 { margin:0 0 8px; font-size:clamp(20px,3vw,26px); }
+.recording-guide-head p { color:#706578; font-size:13px; line-height:1.6; margin:0; max-width:630px; }
+.recording-badge { border-radius:999px; background:#f3ebfa; color:#75509b; font-size:11px; font-weight:700; padding:7px 11px; }
+.recording-destinations { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.recording-destination { border:1px solid #eee5f1; background:#fcf9ff; border-radius:13px; padding:15px; display:grid; gap:9px; }
+.recording-destination strong, .recording-destination label { font-size:14px; font-weight:760; }
+.recording-destination span { color:#6d6175; font-size:12px; line-height:1.5; }
+.recording-destination select { width:100%; border:1px solid #d6c9e1; border-radius:9px; padding:10px 12px; background:#fff; font:inherit; color:#372a46; }
+.recording-launch { text-decoration:none; display:inline-flex; justify-content:center; align-items:center; width:fit-content; }
+.recording-steps { margin:0; padding-left:23px; font-size:13px; color:#53455d; line-height:1.8; }
+.recording-steps li { padding-bottom:6px; }
+.recording-limits { border:1px solid #e7d2bd; border-radius:12px; padding:14px; background:#fffaf4; color:#5a4837; font-size:13px; line-height:1.6; }
+.recording-help { margin:0; font-size:12px; color:#704e8b; }
+.recording-help a { color:#65349d; }
+.podcast-hand-hint { border:1px solid #d7c3e9; background:#f6effc; color:#4e3870;
+ border-radius:13px; padding:13px 16px; line-height:1.6; font-size:13px; margin:13px 0; }
+@media(max-width:680px) {
+ .recording-destinations { grid-template-columns:minmax(0,1fr); }
+ .recording-launch { width:100%; }
+}
