@@ -9,6 +9,7 @@ test("link de diretor e links individuais para OBS usam sala e streamID", () => 
   assert.equal(d.origin, "https://vdo.ninja");
   assert.equal(d.searchParams.get("director"), room);
   assert.equal(d.searchParams.has("room"), false);
+  assert.equal(d.searchParams.has("notify"), true, "diretor deve receber alerta sonoro");
 
   const solo = new URL(obsSoloUrl(room, "aliceCam123"));
   assert.equal(solo.searchParams.get("room"), room);
