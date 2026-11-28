@@ -8,7 +8,9 @@ type Props = { room: string };
 
 export default function ObsDirectorPanel({ room }: Props) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
-  const [enabled, setEnabled] = useState(false);
+  // O diretor fica conectado desde a abertura da sala; sem ele os avisos
+  // de mãos levantadas não chegam ao apresentador.
+  const [enabled, setEnabled] = useState(true);
   const [ready, setReady] = useState(false);
   const [guests, setGuests] = useState<ObsGuest[]>([]);
   const [seenReply, setSeenReply] = useState(false);
@@ -143,8 +145,9 @@ export default function ObsDirectorPanel({ room }: Props) {
       <header className="obs-producer-heading">
         <div>
           <span className="eyebrow">Produção · acesso local</span>
-          <h2>Fontes individuais para o OBS</h2>
-          <p>Visualize cada convidado em uma fonte separada do OBS Studio.</p>
+          <h2>Direção do Podcast · mãos levantadas e OBS</h2>
+          <p>As mãos levantadas aparecem no diretor do VDO.Ninja. Você também pode
+          levar cada vídeo para o OBS, se precisar.</p>
         </div>
         {!enabled && (
           <button className="button button-primary" type="button"
@@ -154,6 +157,11 @@ export default function ObsDirectorPanel({ room }: Props) {
         )}
       </header>
 
+      <p className="obs-advice">
+        Quando alguém usar "Levantar a mão" na chamada, o diretor recebe um aviso.
+        O painel fica conectado automaticamente durante a gravação. Se não ouvir o
+        alerta, clique uma vez no diretor para liberar o som do navegador.
+      </p>
       <p className="obs-advice">
         O VDO.Ninja fornece um link SOLO para cada vídeo. Estes links exibem a transmissão no OBS,
         mas não gravam os participantes por conta própria. Grave no OBS e peça consentimento.
@@ -278,10 +286,8 @@ export default function ObsDirectorPanel({ room }: Props) {
           </section>
           {copyNote && <p className="feedback" role="status">{copyNote}</p>}
           {error && <p className="feedback feedback-error" role="alert">{error}</p>}
-          <button className="button button-subtle" type="button"
-            onClick={() => { setEnabled(false); setReady(false); setGuests([]); setSeenReply(false); }}>
-            Desconectar painel diretor
-          </button>
+          <p className="obs-advice">Mantenha esta sala aberta enquanto recebe solicitações de fala.
+            Para encerrar a direção, saia da chamada do Podcast.</p>
         </>
       )}
     </section>
