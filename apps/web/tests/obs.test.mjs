@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { directorUrl, obsSoloUrl, parseGuestList } from "../src/obs.ts";
+import { directorUrl, obsSoloUrl, parseGuestList, parseVdoGuestResponse, manualObsGuest } from "../src/obs.ts";
 
 const room = "aulas-000102030405060708090a0b";
 
@@ -46,4 +46,42 @@ test("lista de participantes do VDO reconhece IDs, remove repetições e ignora 
   ]);
   assert.equal(parseGuestList(null), null);
   assert.deepEqual(parseGuestList([]), []);
+});
+
+test("respostas do iframe com guestList sem callback também são detectadas", () => {
+  const guests = { "1": { streamID: "cameraFredABC", label: "Fred" } };
+  assert.deepEqual(parseVdoGuestResponse({ guestList: guests }), [
+    { streamId: "cameraFredABC", label: "Fred" }
+  ]);
+  assert.deepEqual(parseVdoGuestResponse({ cib: "podcast-obs-guests", result: guests }), [
+    { streamId: "cameraFredABC", label: "Fred" }
+  ]);
+  assert.deepEqual(parseVdoGuestResponse({ "1": { streamID: "cameraFredABC", label: "Fred" } }), [
+    { streamId: "cameraFredABC", label: "Fred" }
+  ]);
+});
+
+test("getStreamIDs e mapas de stream são fontes alternativas ao diretor", () => {
+  assert.deepEqual(parseVdoGuestResponse({
+    cib: "podcast-obs-streams",
+    streamIDs: ["cameraFredABC", "cameraAna123"]
+  }), [
+    { streamId: "cameraFredABC", label: "Convidado 1" },
+    { streamId: "cameraAna123", label: "Convidado 2" }
+  ]);
+  assert.deepEqual(parseGuestList({ cameraFredABC: { label: "Fred" } }), [
+    { streamId: "cameraFredABC", label: "Fred" }
+  ]);
+  assert.equal(parseVdoGuestResponse({ action: "guest-connected", streamID: "cameraFredABC" }), null);
+});
+
+test("link SOLO ou stream ID podem ser incluídos manualmente, sem aceitar outra origem", () => {
+  assert.deepEqual(manualObsGuest("cameraFredABC", room), {
+    streamId: "cameraFredABC", label: "Câmera cameraFredABC"
+  });
+  assert.deepEqual(manualObsGuest("https://vdo.ninja/?room=" + room + "&view=cameraFredABC&solo", room),
+    { streamId: "cameraFredABC", label: "Câmera cameraFredABC" });
+  assert.throws(() => manualObsGuest("https://evil.example/?view=cameraFredABC", room));
+  assert.throws(() => manualObsGuest("https://vdo.ninja/?room=outraSala&view=cameraFredABC", room));
+  assert.throws(() => manualObsGuest("https://vdo.ninja/?director=hello", room));
 });
