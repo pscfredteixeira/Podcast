@@ -37,28 +37,36 @@ export function parseGuestList(input: unknown): ObsGuest[] | null {
     try { return parseGuestList(JSON.parse(input) as unknown); } catch { return null; }
   }
   if (!input || typeof input !== "object") return null;
-  const data = input as Record<string, unknown>;
-  const entries = Array.isArray(input)
-    ? input.map((v, i) => [String(i + 1), v] as [string, unknown])
-    : Object.entries(data);
-  const guests: ObsGuest[] = [];
-  const seen = new Set<string>();
   const validId = (id: unknown): id is string =>
     typeof id === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(id) && !/^\\d+$/.test(id);
+  const data = input as Record<string, unknown>;
+  const entries: [string, unknown][] = Array.isArray(input)
+    ? input.map((v, i) => [String(i + 1), v] as [string, unknown])
+    : Object.entries(data);
+  // VDO também retorna um único objeto de stream, não só mapas por slot.
+  if (!Array.isArray(input) && entries.some(([key]) =>
+    ["streamID", "streamId", "streamid"].includes(key))) {
+    return parseGuestList([input]);
+  }
+  const guests: ObsGuest[] = [];
+  const seen = new Set<string>();
   for (const [slot, value] of entries) {
     const obj = value && typeof value === "object" && !Array.isArray(value)
       ? value as Record<string, unknown> : null;
     const id = obj
-      ? [obj.streamID, obj.streamId, obj.streamid, obj.stream, obj.id, obj.uuid, slot]
-        .find(validId)
-      : validId(value) ? value : null;
+      ? [obj.streamID, obj.streamId, obj.streamid, obj.stream, obj.id,
+         obj.uuid, slot].find(validId)
+      // Stream list arrays contain IDs; stream maps may be keyed by ID.
+      : validId(slot) ? slot : validId(value) ? value : null;
     if (!id || seen.has(id)) continue;
     seen.add(id);
     const label = obj && typeof obj.label === "string" && obj.label.trim()
       ? obj.label.trim().slice(0, 50)
       : obj && typeof obj.name === "string" && obj.name.trim()
         ? obj.name.trim().slice(0, 50)
-        : `Convidado ${guests.length + 1}`;
+        : typeof value === "string" && validId(slot) && value.trim()
+          ? value.trim().slice(0, 50)
+          : `Convidado ${guests.length + 1}`;
     guests.push({ streamId: id, label });
   }
   return guests;
@@ -83,7 +91,11 @@ export function parseVdoGuestResponse(input: unknown): ObsGuest[] | null {
        msg.action === "getGuestList" || msg.action === "getStreamIDs")
       ? msg.result ?? msg.value ?? msg.data ?? null
       : null;
-  return result == null ? null : parseGuestList(result);
+  if (result != null) return parseGuestList(result);
+  // Algumas versões retornam diretamente o mapa de slots sem wrapper.
+  if (Object.keys(msg).some(key => /^\\d+$/.test(key) &&
+    msg[key] && typeof msg[key] === "object")) return parseGuestList(msg);
+  return null;
 }
 
 export function manualObsGuest(input: string, room: string): ObsGuest {
