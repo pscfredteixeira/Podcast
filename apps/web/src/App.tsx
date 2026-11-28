@@ -8,6 +8,7 @@ import type { RoomSnapshot } from "./api";
 import QuizPanel from "./QuizPanel";
 import ActivityPanel from "./ActivityPanel";
 import ObsDirectorPanel from "./ObsDirectorPanel";
+import RecordingGuide from "./RecordingGuide";
 import { createRoomId, inviteUrl, isRoomId, readRoomId, readTeacherSecret, teacherUrl, vdoUrl } from "./room";
 
 type DeviceStatus = "idle" | "testing" | "ready" | "error";
@@ -503,7 +504,15 @@ export default function App() {
               )}
             </div>
 
+            {isLocalProducer && <RecordingGuide room={room} />}
             {isLocalProducer && <ObsDirectorPanel room={room} />}
+            {!isLocalProducer && !hasServer && role === "demo" && (
+              <p className="podcast-hand-hint">
+                <strong>Quer pedir a palavra?</strong> Use o botão
+                <strong> Levantar a mão</strong> nos controles do VDO.Ninja.
+                O apresentador verá o aviso no painel de direção.
+              </p>
+            )}
 
             <div className="call-footer">
               <div className="call-note">
