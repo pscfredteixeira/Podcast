@@ -34,9 +34,8 @@ export function vdoUrl(room: string, name: string): string {
   url.searchParams.set("room", room);
   url.searchParams.set("label", name.trim().slice(0, 40));
   url.searchParams.set("showlabels", "");
-  // Exibe o botão nativo "Levantar a mão" na barra de controle do convidado.
-  // A notificação chega ao iframe diretor da mesma sala.
-  url.searchParams.set("hands", "");
+  // O controle de mão é exibido no Podcast para TODOS os participantes.
+  // Não ativar &hands, pois o botão nativo só avisa o diretor do VDO.
   return url.toString();
 }
 
