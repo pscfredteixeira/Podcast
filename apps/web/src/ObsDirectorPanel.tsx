@@ -8,8 +8,8 @@ type Props = { room: string };
 
 export default function ObsDirectorPanel({ room }: Props) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
-  // O diretor fica conectado desde a abertura da sala; sem ele os avisos
-  // de mãos levantadas não chegam ao apresentador.
+  // O diretor fica conectado desde a abertura da sala para oferecer
+  // fontes individuais; as mãos são sincronizadas pelo iframe da chamada.
   const [enabled, setEnabled] = useState(true);
   const [ready, setReady] = useState(false);
   const [guests, setGuests] = useState<ObsGuest[]>([]);
