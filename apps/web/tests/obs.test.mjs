@@ -77,10 +77,10 @@ test("getStreamIDs e mapas de stream são fontes alternativas ao diretor", () =>
 
 test("link SOLO ou stream ID podem ser incluídos manualmente, sem aceitar outra origem", () => {
   assert.deepEqual(manualObsGuest("cameraFredABC", room), {
-    streamId: "cameraFredABC", label: "Câmera cameraFredABC"
+    streamId: "cameraFredABC", label: "Câmera cameraFredAB"
   });
   assert.deepEqual(manualObsGuest("https://vdo.ninja/?room=" + room + "&view=cameraFredABC&solo", room),
-    { streamId: "cameraFredABC", label: "Câmera cameraFredABC" });
+    { streamId: "cameraFredABC", label: "Câmera cameraFredAB" });
   assert.throws(() => manualObsGuest("https://evil.example/?view=cameraFredABC", room));
   assert.throws(() => manualObsGuest("https://vdo.ninja/?room=outraSala&view=cameraFredABC", room));
   assert.throws(() => manualObsGuest("https://vdo.ninja/?director=hello", room));
