@@ -14,6 +14,27 @@ O criador da sala já pode abrir um **Painel diretor** para consultar o VDO.Ninj
 
 [Guia de uso e limitações](docs/OBS-LINKS.md).
 
+## Pedir a palavra — visível a todos
+
+O botão **Levantar a mão** agora fica na interface do Podcast, **acima da
+videochamada**, tanto no computador quanto no celular. Ao clicar, o site
+envia um aviso com o nome pelo canal de dados P2P do VDO.Ninja; todos os
+participantes conectados que estiverem usando o Podcast Lab recebem uma
+faixa com os nomes de quem levantou a mão. **Abaixar minha mão** remove o
+pedido de fala. Para evitar nomes presos depois de desconexões, a mão é
+reanunciada periodicamente e expira cerca de 18 segundos após o último aviso.
+
+**Importante:** o botão nativo `&hands` do VDO.Ninja notifica somente o
+diretor, portanto foi desativado nos convites gerados pelo Podcast.
+Os indicadores compartilhados do Podcast são experimentais e dependem de
+uma conexão P2P de dados ativa; pessoas que abrem o VDO.Ninja em uma aba
+externa não veem o painel de mãos do Podcast.
+
+**Teste:** abra a mesma sala em dois dispositivos usando o site Podcast,
+ative o vídeo em ambos e clique em **Levantar a mão** no primeiro.
+A notificação com o nome deve surgir no segundo; depois experimente
+**Abaixar minha mão**. Esse teste de sessão real ainda precisa ser confirmado.
+
 ## Próximas etapas
 
 1. Adaptar o nome, textos e fluxo de entrada para **apresentador** e **convidado**.
