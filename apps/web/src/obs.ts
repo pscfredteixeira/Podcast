@@ -38,7 +38,7 @@ export function parseGuestList(input: unknown): ObsGuest[] | null {
   }
   if (!input || typeof input !== "object") return null;
   const validId = (id: unknown): id is string =>
-    typeof id === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(id) && !/^\\d+$/.test(id);
+    typeof id === "string" && /^[A-Za-z0-9_-]{3,64}$/.test(id) && !/^[0-9]+$/.test(id);
   const data = input as Record<string, unknown>;
   const entries: [string, unknown][] = Array.isArray(input)
     ? input.map((v, i) => [String(i + 1), v] as [string, unknown])
@@ -93,7 +93,7 @@ export function parseVdoGuestResponse(input: unknown): ObsGuest[] | null {
       : null;
   if (result != null) return parseGuestList(result);
   // Algumas versões retornam diretamente o mapa de slots sem wrapper.
-  if (Object.keys(msg).some(key => /^\\d+$/.test(key) &&
+  if (Object.keys(msg).some(key => /^[0-9]+$/.test(key) &&
     msg[key] && typeof msg[key] === "object")) return parseGuestList(msg);
   return null;
 }
@@ -101,7 +101,7 @@ export function parseVdoGuestResponse(input: unknown): ObsGuest[] | null {
 export function manualObsGuest(input: string, room: string): ObsGuest {
   const text = input.trim();
   let streamId = text;
-  if (/^https?:\\/\\//i.test(text)) {
+  if (text.startsWith("https://") || text.startsWith("http://")) {
     let url: URL;
     try { url = new URL(text); }
     catch { throw new Error("Link do VDO.Ninja inválido."); }
