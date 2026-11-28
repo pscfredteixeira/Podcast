@@ -697,3 +697,12 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .podcast-hands-button { flex: 1 1 100%; }
   .podcast-hands-caption { flex: 1 1 100%; }
 }
+
+/* Recuperação de fontes quando VDO.Ninja não responde ao getGuestList. */
+.obs-manual-source { border:1px solid #e0d5ec; border-radius:12px; background:#f9f5fd; padding:14px; margin:16px 0; display:grid; gap:10px; }
+.obs-manual-source label { font-size:13px; font-weight:750; color:#4b3466; }
+.obs-manual-source-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.obs-manual-source input { flex:1 1 240px; min-width:0; border:1px solid #d4c7e2; border-radius:9px; background:white; color:#2f2540; padding:11px 12px; font:inherit; font-size:13px; }
+.obs-manual-source .button { flex:0 1 auto; }
+.obs-manual-source .obs-advice { margin:0; }
+@media (max-width: 560px) { .obs-manual-source .button { flex:1 1 100%; } }
