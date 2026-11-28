@@ -37,6 +37,7 @@ test("VDO.Ninja recebe sala e nome sem permitir injeção de parâmetros", () =>
   assert.equal(link.searchParams.get("room"), id);
   assert.equal(link.searchParams.get("label"), "João &room=outra");
   assert.equal(link.searchParams.has("showlabels"), true);
+  assert.equal(link.searchParams.has("hands"), true, "convidado deve ter botão para levantar a mão");
   assert.equal(link.searchParams.getAll("room").length, 1);
 });
 
